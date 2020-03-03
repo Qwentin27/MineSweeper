@@ -44,12 +44,20 @@ for i in range(nb):                         # Ajout des mines
     indx2.remove(ind2)
     tab[ind1][ind2] = -1
     
-"""   
-for i in range(n):           # Indication nombre de bombes aux alentours de la case
-    for j in range(p):
-        if tab[i][j] != -1:
-"""          
-
+def minedetect():
+	#number = 0
+	#posx = 0
+	#posy = 0
+	Lp = [-1, 0, 1]
+	Lx = []
+	Ly = []
+	Lv = []
+	for i in range(n):           # Indication nb mines
+    	for j in range(p):
+        	if tab[i][j] != -1:		# Test borderline
+				for k in range(len(Lp)):
+					if tab[n+k][p+k] == -1:
+						
 
 
 def creategrid(table):              # Création de l'espace de jeu
