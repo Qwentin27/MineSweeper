@@ -7,7 +7,7 @@ HEIGHT = 500    # Dimensions du Canvas
 WIDTH = 500
 
 cnv = Canvas(master, height=HEIGHT, width=WIDTH, bg='ivory')    # Création du Canvas
-cnv.pack()
+#cnv.pack()   T.V.
 
 c = 20  # Côté carré
 N = c * c  # Aire du carré
@@ -37,27 +37,38 @@ for i in range(n):           # Création d'une liste contenant tous les indices 
 for i in range(p):        # Création d'une liste contenant tous les indices des colonnes du tableau
     indx2.append(i)
     
-for i in range(nb):                         # Ajout des mines
+for i in range(nb):                              # Ajout des mines
     ind1 = indx1[randint(0, len(indx1)-1)]
     ind2 = indx2[randint(0, len(indx2)-1)]
     indx1.remove(ind1)
     indx2.remove(ind2)
     tab[ind1][ind2] = -1
     
-def minedetect():
-	#number = 0
-	#posx = 0
-	#posy = 0
-	Lp = [-1, 0, 1]
-	Lx = []
-	Ly = []
-	Lv = []
-	for i in range(n):           # Indication nb mines
-    	for j in range(p):
-        	if tab[i][j] != -1:		# Test borderline
-				for k in range(len(Lp)):
-					if tab[n+k][p+k] == -1:
-						
+
+def voisins(n, i, j):   # longueur du tableau par défaut 
+    
+                                #       De N à N sens horaire
+    return [(a,b) for (a, b) in [(i-1, j), (i-1, j+1), (i, j+1), (i+1, j+1), (i+1,j), (i+1, j-1), (i, j-1), (i-1, j-1)] 
+            if a in range(n) and b in range(n)]
+    
+#print(voisins(n, 5, 6))  TEST
+    
+    
+"""def minedetect():
+    #number = 0
+    #posx = 0
+    #posy = 0
+    Lp = [-1, 0, 1]
+    Lx = []
+    Ly = []
+    Lv = []
+    for i in range(n):               # Indication nb mines aux alentours 
+        for j in range(p):
+            if tab[i][j] != -1:		         # Test borderline
+                for k in range(len(Lp)):
+                    if tab[n+k][p+k] == -1:
+                        True"""
+        						
 
 
 def creategrid(table):              # Création de l'espace de jeu
@@ -67,7 +78,11 @@ def creategrid(table):              # Création de l'espace de jeu
         y = i*c
         for j in range(len(table[i])):
             x = j*c
-            cnv.create_rectangle((x, y), (x+c, y+c), fill="grey")
+            #cnv.create_rectangle((x, y), (x+c, y+c), fill="grey")    
+            case = Button(master, height = 20, width = 20, bg = 'darkgrey', bd = 3)                                    
+            cnv.pack()
+            cnv.create_window(x+c, y+c, window = case, anchor='nw')
+            
             
 """
 APRES DECOUVERTE DE LA CASE
