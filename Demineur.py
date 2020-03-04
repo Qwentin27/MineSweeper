@@ -101,4 +101,10 @@ APRES DECOUVERTE DE LA CASE
 print(*tab, sep='\n')
 creategrid(tab)
 
+""" 
+
+Espace travail Chloé
+
+"""
+
 master.mainloop()
