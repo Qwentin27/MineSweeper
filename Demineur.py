@@ -16,40 +16,45 @@ nb = 20 # Nombre de mines
 
 shuffle(L)
 
-tab = []
-cpt = 0
-
-for i in range(c):                  # Remplissage du tableau (sous forme de matrice)
-    ligne = []
-    for j in range(c):
-        ligne.append(L[cpt])
-        cpt += 1
-    tab.append(ligne)
+def createTab():        # Création du tableau (sous forme de matrice)
     
-indx1 = []
-indx2 = []
+    tab = []
+    cpt = 0
 
-n, p = len(tab), len(tab[0])
-
-for i in range(n):           # Création d'une liste contenant tous les indices des lignes du tableau
-    indx1.append(i)
+    for i in range(c):                 
+        ligne = []
+        for j in range(c):
+            ligne.append(L[cpt])
+            cpt += 1
+        tab.append(ligne)
     
-for i in range(p):        # Création d'une liste contenant tous les indices des colonnes du tableau
-    indx2.append(i)
     
-for i in range(nb):                              # Ajout des mines
-    ind1 = indx1[randint(0, len(indx1)-1)]
-    ind2 = indx2[randint(0, len(indx2)-1)]
-    indx1.remove(ind1)
-    indx2.remove(ind2)
-    tab[ind1][ind2] = -1
+def fillField():        # Remplissage du tableau (de façon aléatoire avec des mines ou non)
+    
+    indx1 = []
+    indx2 = []
+    n, p = len(tab), len(tab[0])
+    
+    for i in range(n):           # Création d'une liste contenant tous les indices des lignes du tableau
+        indx1.append(i)
+        
+    for i in range(p):           # Création d'une liste contenant tous les indices des colonnes du tableau
+        indx2.append(i)
+        
+    for i in range(nb):                              # Ajout des mines
+        ind1 = indx1[randint(0, len(indx1)-1)]
+        ind2 = indx2[randint(0, len(indx2)-1)]
+        indx1.remove(ind1)
+        indx2.remove(ind2)
+        tab[ind1][ind2] = -1
+        
     
 
 def voisins(n, i, j):   # longueur du tableau par défaut 
     
                                 #       De N à N sens horaire
-    return [(a,b) for (a, b) in [(i-1, j), (i-1, j+1), (i, j+1), (i+1, j+1), (i+1,j), (i+1, j-1), (i, j-1), (i-1, j-1)] 
-            if a in range(n) and b in range(n)]
+    return [(a,b) for (a, b) in [(i-1, j), (i-1, j+1), (i, j+1), (i+1, j+1), (i+1,j), (i+1, j-1), (i, j-1), (i-1, j-1)] if a in range(n) and b in range(n)]
+ 
     
 #print(voisins(n, 5, 6))  TEST
     
@@ -71,17 +76,17 @@ def voisins(n, i, j):   # longueur du tableau par défaut
         						
 
 
-def creategrid(table):              # Création de l'espace de jeu
+def createGrid(table):              # Création de l'espace de jeu (graphiquement)
     x = 0
     y = 0
     for i in range(len(table)):
         y = i*c
         for j in range(len(table[i])):
             x = j*c
-            #cnv.create_rectangle((x, y), (x+c, y+c), fill="grey")    
-            case = Button(master, height = 20, width = 20, bg = 'darkgrey', bd = 3)                                    
+            cnv.create_rectangle((x, y), (x+c, y+c), fill="grey")                                      
             cnv.pack()
-            cnv.create_window(x+c, y+c, window = case, anchor='nw')
+            
+#def discovery():            # Découverte des cases lors du 1er clic
             
             
 """
@@ -98,7 +103,7 @@ APRES DECOUVERTE DE LA CASE
 
 """
             
-print(*tab, sep='\n')
+print(*tab, sep='\n')   # Affiche le tableau, sous forme de matrice (mais avec des crochets)
 creategrid(tab)
 
 """ 
