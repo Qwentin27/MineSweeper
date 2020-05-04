@@ -49,15 +49,46 @@ def fillField(tab):        # Remplissage du tableau (de façon aléatoire avec d
         indx2.remove(ind2)
         tab[ind1][ind2] = -1
         
+    """for k in range(len(tab)):
+        for l in range(len(tab[0])):
+            mineDetect(tab, k, l)"""
+        
     
 # REPRIS D'UN TP ATTENTION !
-def voisins(n, i, j):   # Renvoie les voisins autour de la case concernée / longueur du tableau par défaut 
+def voisins(tab, i, j):   # Renvoie les indices / valeurs des voisins autour de la case concernée
     
-                                #       De N à N sens horaire
-    return [(a,b) for (a, b) in [(i-1, j), (i-1, j+1), (i, j+1), (i+1, j+1), (i+1,j), (i+1, j-1), (i, j-1), (i-1, j-1)] if a in range(n) and b in range(n)]
- 
+    """ AJOUTER LA GESTION DES VOISINS DES BORDS"""
     
-#print(voisins(n, 5, 6))  TEST
+                            #       De N à N sens horaire
+    #Lx = [(a,b) for (a, b) in [(i-1, j), (i-1, j+1), (i, j+1), (i+1, j+1), (i+1,j), (i+1, j-1), (i, j-1), (i-1, j-1)] if a in range(len(tab)) and b in range(len(tab))]
+    
+    Lx = [] # ajout des indices de NO à NO
+    n = i-1
+    p = j-1
+    for k in range(2):
+        Lx.append((n, p))
+        p += 1
+    for k in range(2):
+        Lx.append((n, p))
+        n += 1
+    for k in range(2):
+        Lx.append((n, p))
+        p -= 1
+    for k in range(2):
+        Lx.append((n, p))
+        n -= 1
+
+    Lv = []
+    for k in range(len(Lx)):
+        n = tab[Lx[k][0]][Lx[k][1]]
+        Lv.append(n)
+    return (Lx, Lv)
+        
+t = [[0, 1, 0],
+     [1, 0, 0],
+     [0, 0, 1]]
+    
+print(voisins(t, 1, 1)[1])  #TEST
 
         						
 def createGrid(table):              # Création de l'espace de jeu (graphiquement)
@@ -70,20 +101,36 @@ def createGrid(table):              # Création de l'espace de jeu (graphiquemen
             cnv.create_rectangle((x, y), (x+c, y+c), fill="grey")                                      
             cnv.pack()
             
-#def discovery():            # Découverte des cases lors du 1er clic (aspect graphique à prendre en compte) 
-            
-            
-def mineDetect(tab, i, j):           # Algorithme de détection des mines pour une case (et numéro affiché en conséquence)
+def discovery(tab, i, j):            # Découverte des cases lors du "1er clic" (aspect graphique à prendre en compte) 
     
-    #if tab[i][j] == -1:
-    #    gameState()
+    if tab[i][j] == -1:
+        #gameState()     # renvoie au game over si clic sur bombe 
+        False
+    else :
+        L = []
+        for k in range(8):
+            if voisins(tab, i, j)[1][k] == -1:
+                #caseClick(tab, i, j)
+                False
+            elif voisins(tab, i, j)[1][k] == 0:
+                caseClick(tab, i, j)
+                n = voisins(tab, i, j)[0][k][0]
+                p = voisins(tab, i, j)[0][k][1]
+                return discovery(tab, n, p)
+            else:
+                n = voisins(tab, i, j)[0][k][0]
+                p = voisins(tab, i, j)[0][k][1]
+                #caseClick(tab, n, p)
+            
+        
+def mineDetect(tab, i, j):           # Algorithme de détection des mines pour une case (et numéro affiché en conséquence)
     
     nb = 0
     
     for k in range(8):
-        if voisins(len(tab), i, j)[k] == -1:
+        if voisins(tab, i, j)[1][k] == -1:
             nb +=1
-    return nb
+    tab[i][j] += nb
 
 
     
@@ -102,11 +149,6 @@ def mineDetect(tab, i, j):           # Algorithme de détection des mines pour u
                     if tab[n+k][p+k] == -1:
                         True"""
 
-def mineNumberInTab(tab, i, j):           # Changement des valeurs dans tab selon le nombre de mines
-    
-    nb = mineDetect(tab, i, j)
-    tab[i][j] += nb
-            
             
 """
 APRES DECOUVERTE DE LA CASE
@@ -126,13 +168,14 @@ APRES DECOUVERTE DE LA CASE
 
 #Espace travail Chloé
 
-#def caseClick():        # Dévoilement d'une case (graphiquement)
+#def caseClick(tab, i, j):        # Dévoilement d'une case (graphiquement)
 
 #def caseNumber():       # Affichage des numéros (graphiquement)
 
 #def gameState():        # WIN or GAME OVER
 
 # + gérer l'incrémentation du compteur, gérer les composants visuels 
+
 
 
 tab = createTab()
