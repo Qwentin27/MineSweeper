@@ -12,23 +12,37 @@ cnv = Canvas(master, height=HEIGHT, width=WIDTH, bg='ivory')    # Création du C
 c = 20  # Côté carré
 N = c * c  # Aire du carré
 L = [0] * N # Création d'une liste remplie de 0
+nbline = 20
+nbcol = 20
 nb = 20 # Nombre de mines
 
 shuffle(L)
 
-def createTab():        # Création du tableau (sous forme de matrice)
+def createTab():        # Création du tableau de jeu (sous forme de matrice)
     
     tab = []
     cpt = 0
 
-    for i in range(c):                 
+    for i in range(nbline):                 
         ligne = []
-        for j in range(c):
+        for j in range(nbcol):
             ligne.append(L[cpt])
             cpt += 1
         tab.append(ligne)
     return tab
     
+def createTab2D():        # Création du tableau des ids des cases (sous forme de matrice)
+    
+    ids = []
+    cpt = 0
+
+    for i in range(nbline):                 
+        ligne = []
+        for j in range(nbcol):
+            ligne.append(L[cpt])
+            cpt += 1
+        ids.append(ligne)
+    return ids
     
 def fillField(tab):        # Remplissage du tableau (de façon aléatoire avec des mines ou non)
     
@@ -57,14 +71,15 @@ def fillField(tab):        # Remplissage du tableau (de façon aléatoire avec d
 # REPRIS D'UN TP ATTENTION !
 def voisins(tab, i, j):   # Renvoie les indices / valeurs des voisins autour de la case concernée
     
-    """ AJOUTER LA GESTION DES VOISINS DES BORDS"""
+    
     
                             #       De N à N sens horaire
     #Lx = [(a,b) for (a, b) in [(i-1, j), (i-1, j+1), (i, j+1), (i+1, j+1), (i+1,j), (i+1, j-1), (i, j-1), (i-1, j-1)] if a in range(len(tab)) and b in range(len(tab))]
-    
+
     Lx = [] # ajout des indices de NO à NO
     n = i-1
     p = j-1
+ 
     for k in range(2):
         Lx.append((n, p))
         p += 1
@@ -90,16 +105,19 @@ t = [[0, 1, 0],
     
 print(voisins(t, 1, 1)[1])  #TEST
 
-        						
-def createGrid(table):              # Création de l'espace de jeu (graphiquement)
+
+
+def createGrid(tab):         # Création de l'espace de jeu (graphiquement)
     x = 0
     y = 0
-    for i in range(len(table)):
+    for i in range(len(tab)):
         y = i*c
-        for j in range(len(table[i])):
+        for j in range(len(tab[i])):
             x = j*c
-            cnv.create_rectangle((x, y), (x+c, y+c), fill="grey")                                      
+            case = cnv.create_rectangle((x, y), (x+c, y+c), fill="grey")
+            ids[i][j] = case                                      
             cnv.pack()
+            
             
 def discovery(tab, i, j):            # Découverte des cases lors du "1er clic" (aspect graphique à prendre en compte) 
     
@@ -167,21 +185,33 @@ APRES DECOUVERTE DE LA CASE
  
 
 #Espace travail Chloé
+        
 
-#def caseClick(tab, i, j):        # Dévoilement d'une case (graphiquement)
-
-#def caseNumber():       # Affichage des numéros (graphiquement)
-
+def caseNumber(i, j):       # Affichage des numéros (graphiquement)
+    True
+    
 #def gameState():        # WIN or GAME OVER
 
 # + gérer l'incrémentation du compteur, gérer les composants visuels 
 
 
 
-tab = createTab()
-fillField(tab)
+
 print(*tab, sep='\n')   # Affiche le tableau, sous forme de matrice (mais avec des crochets)
+print(*ids, sep='\n')
+
+def caseClic(event):         # Récupère les coordonnées lors d'un clic # Dévoilement d'une case (graphiquement)
+    x,y = event.x, event.y 
+    line = y//c
+    col = x//c
+    cnv.delete(ids[line][col])
+    caseNumber(line, col)
+    
+        						
+tab = createTab()              
+ids = createTab2D()
 createGrid(tab)
+fillField(tab)
 
-
+cnv.bind("<Button>", caseClic)
 master.mainloop()
