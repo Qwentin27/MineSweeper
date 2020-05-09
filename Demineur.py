@@ -71,39 +71,21 @@ def fillField(tab):        # Remplissage du tableau (de façon aléatoire avec d
 # REPRIS D'UN TP ATTENTION !
 def voisins(tab, i, j):   # Renvoie les indices / valeurs des voisins autour de la case concernée
     
-    
-    
                             #       De N à N sens horaire
-    #Lx = [(a,b) for (a, b) in [(i-1, j), (i-1, j+1), (i, j+1), (i+1, j+1), (i+1,j), (i+1, j-1), (i, j-1), (i-1, j-1)] if a in range(len(tab)) and b in range(len(tab))]
-
-    Lx = [] # ajout des indices de NO à NO
-    n = i-1
-    p = j-1
- 
-    for k in range(2):
-        Lx.append((n, p))
-        p += 1
-    for k in range(2):
-        Lx.append((n, p))
-        n += 1
-    for k in range(2):
-        Lx.append((n, p))
-        p -= 1
-    for k in range(2):
-        Lx.append((n, p))
-        n -= 1
+    Lx = [(a,b) for (a, b) in [(i-1, j), (i-1, j+1), (i, j+1), (i+1, j+1), (i+1,j), (i+1, j-1), (i, j-1), (i-1, j-1)] if a in range(len(tab)) and b in range(len(tab))]
 
     Lv = []
-    for k in range(len(Lx)):
-        n = tab[Lx[k][0]][Lx[k][1]]
-        Lv.append(n)
-    return (Lx, Lv)
-        
-t = [[0, 1, 0],
-     [1, 0, 0],
-     [0, 0, 1]]
     
-print(voisins(t, 1, 1)[1])  #TEST
+    for k in range(len(Lx)):
+        Lv.append(tab[Lx[k][0]][Lx[k][1]])
+    
+    return Lv     # Eventuellement renvoyer aussi les coordonnées des voisins pour discovery  
+    
+
+t = [[-1, -1, -1],
+     [-1, 0, -1],
+     [-1, -1, -1]]
+
 
 
 
@@ -126,8 +108,8 @@ def discovery(tab, i, j):            # Découverte des cases lors du "1er clic" 
         False
     else :
         L = []
-        for k in range(8):
-            if voisins(tab, i, j)[1][k] == -1:
+        for k in range(len(voisins(tab, i, j))):
+            if voisins(tab, i, j)[k] == -1:
                 #caseClick(tab, i, j)
                 False
             elif voisins(tab, i, j)[1][k] == 0:
@@ -141,14 +123,17 @@ def discovery(tab, i, j):            # Découverte des cases lors du "1er clic" 
                 #caseClick(tab, n, p)
             
         
-def mineDetect(tab, i, j):           # Algorithme de détection des mines pour une case (et numéro affiché en conséquence)
+def mineDetect(tab):           # Algorithme de détection des mines pour une case (et numéro affiché en conséquence)
     
-    nb = 0
-    
-    for k in range(8):
-        if voisins(tab, i, j)[1][k] == -1:
-            nb +=1
-    tab[i][j] += nb
+    for i in range(len(tab)):
+        for j in range (len(tab[0])):
+            if tab[i][j] != -1:  
+                nb = 0
+                n = len(voisins(tab, i, j))
+                for k in range(n):
+                    if voisins(tab, i, j)[k] == -1:
+                        nb = 1
+                        tab[i][j] += nb
 
 
     
@@ -197,21 +182,26 @@ def caseNumber(i, j):       # Affichage des numéros (graphiquement)
 
 
 
-print(*tab, sep='\n')   # Affiche le tableau, sous forme de matrice (mais avec des crochets)
-print(*ids, sep='\n')
 
-def caseClic(event):         # Récupère les coordonnées lors d'un clic # Dévoilement d'une case (graphiquement)
-    x,y = event.x, event.y 
+def caseClick(event):         # Dévoilement d'une case (graphiquement)
+    x,y = event.x, event.y   # Récupère les coordonnées lors d'un clic 
     line = y//c
     col = x//c
     cnv.delete(ids[line][col])
-    caseNumber(line, col)
+    #caseNumber(line, col)
     
         						
 tab = createTab()              
 ids = createTab2D()
 createGrid(tab)
 fillField(tab)
+    
+print(*tab, sep='\n')   # Affiche le tableau, sous forme de matrice (mais avec des crochets)
+#print(*ids, sep='\n')
+#print(voisins(t, 0, 0))  #TEST
+mineDetect(tab)
+print()
+print(*tab, sep='\n')
 
-cnv.bind("<Button>", caseClic)
+cnv.bind("<Button>", caseClick)
 master.mainloop()
