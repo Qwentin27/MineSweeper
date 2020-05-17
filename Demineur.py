@@ -30,6 +30,26 @@ def createTab():        # Création du tableau de jeu (sous forme de matrice)
             cpt += 1
         tab.append(ligne)
     return tab
+
+def createTabBool():        # Création du tableau de booléens (sous forme de matrice)
+    
+    tabl = []
+    cpt = 0
+
+    for i in range(nbline):                 
+        ligne = []
+        for j in range(nbcol):
+            ligne.append(L[cpt])
+            cpt += 1
+        tabl.append(ligne)
+    return tabl
+
+def fillTabBool(tabl):
+    
+    for i in range(nbline):
+        for j in range(nbcol):
+            tabl[i][j] = False
+           
     
 def createTab2D():        # Création du tableau des ids des cases (sous forme de matrice)
     
@@ -69,6 +89,7 @@ def fillField(tab):        # Remplissage du tableau (de façon aléatoire avec d
         
     
 # REPRIS D'UN TP ATTENTION !
+            
 def voisins(tab, i, j):   # Renvoie les indices / valeurs des voisins autour de la case concernée
     
                             #       De N à N sens horaire
@@ -79,7 +100,7 @@ def voisins(tab, i, j):   # Renvoie les indices / valeurs des voisins autour de 
     for k in range(len(Lx)):
         Lv.append(tab[Lx[k][0]][Lx[k][1]])
     
-    return Lv     # Eventuellement renvoyer aussi les coordonnées des voisins pour discovery  
+    return Lx, Lv     # Eventuellement renvoyer aussi les coordonnées des voisins pour discovery  
     
 
 t = [[-1, -1, -1],
@@ -89,39 +110,25 @@ t = [[-1, -1, -1],
 
 
 
-def createGrid(tab):         # Création de l'espace de jeu (graphiquement)
+def createGrid(tabl):         # Création de l'espace de jeu (graphiquement)
     x = 0
     y = 0
-    for i in range(len(tab)):
+    for i in range(len(tabl)):
         y = i*c
-        for j in range(len(tab[i])):
+        for j in range(len(tabl[i])):
             x = j*c
-            case = cnv.create_rectangle((x, y), (x+c, y+c), fill="grey")
-            ids[i][j] = case                                      
-            cnv.pack()
+            tabl[10][10] = True
+            if tabl[i][j] == False:
+                case = cnv.create_rectangle((x, y), (x+c, y+c), fill="grey")
+                ids[i][j] = case                                      
+                cnv.pack()
             
             
-def discovery(tab, i, j):            # Découverte des cases lors du "1er clic" (aspect graphique à prendre en compte) 
+def discovery(i, j):            # Découverte des cases lors du "1er clic" (aspect graphique à prendre en compte) 
     
-    if tab[i][j] == -1:
-        #gameState()     # renvoie au game over si clic sur bombe 
-        False
-    else :
-        L = []
-        for k in range(len(voisins(tab, i, j))):
-            if voisins(tab, i, j)[k] == -1:
-                #caseClick(tab, i, j)
-                False
-            elif voisins(tab, i, j)[1][k] == 0:
-                caseClick(tab, i, j)
-                n = voisins(tab, i, j)[0][k][0]
-                p = voisins(tab, i, j)[0][k][1]
-                return discovery(tab, n, p)
-            else:
-                n = voisins(tab, i, j)[0][k][0]
-                p = voisins(tab, i, j)[0][k][1]
-                #caseClick(tab, n, p)
-            
+
+                
+                
         
 def mineDetect(tab):           # Algorithme de détection des mines pour une case (et numéro affiché en conséquence)
     
@@ -129,11 +136,12 @@ def mineDetect(tab):           # Algorithme de détection des mines pour une cas
         for j in range (len(tab[0])):
             if tab[i][j] != -1:  
                 nb = 0
-                n = len(voisins(tab, i, j))
+                n = len(voisins(tab, i, j)[1])
                 for k in range(n):
-                    if voisins(tab, i, j)[k] == -1:
+                    if voisins(tab, i, j)[1][k] == -1:
                         nb = 1
                         tab[i][j] += nb
+
 
 
     
@@ -152,56 +160,53 @@ def mineDetect(tab):           # Algorithme de détection des mines pour une cas
                     if tab[n+k][p+k] == -1:
                         True"""
 
-            
-"""
-APRES DECOUVERTE DE LA CASE
-
--1 : mine (test : si négatif, alors bombe)
-0 : pas de mine à proximité
-1 : 1 mine à proximité
-2 : 2 mines à proximité
-3...
-4... 
-...
-8...
-
-"""
-
- 
-
-#Espace travail Chloé
-        
-
 def caseNumber(i, j):       # Affichage des numéros (graphiquement)
-    True
+    for k in range(1, 9):
+        if tab[i][j] == k:
+            print(k)
+            logo = PhotoImage(file=str(k) + ".png")
+        else:
+            logo = PhotoImage(file="mine18x18.png")
+            
+    cnv.create_image(j*20+10, i*20+10, image = logo)
+    
     
 #def gameState():        # WIN or GAME OVER
 
 # + gérer l'incrémentation du compteur, gérer les composants visuels 
 
+#def tabState():
 
 
 
-
-def caseClick(event):         # Dévoilement d'une case (graphiquement)
+def caseClick(event):         
     x,y = event.x, event.y   # Récupère les coordonnées lors d'un clic 
     line = y//c
     col = x//c
-    cnv.delete(ids[line][col])
-    #caseNumber(line, col)
+    tabl[line][col] = True
+    print(*tabl, sep='\n')
+    createGrid(tabl)
+
+
     
         						
 tab = createTab()              
 ids = createTab2D()
-createGrid(tab)
+tabl = createTabBool()
+fillTabBool(tabl)
+createGrid(tabl)
 fillField(tab)
+
     
-print(*tab, sep='\n')   # Affiche le tableau, sous forme de matrice (mais avec des crochets)
-#print(*ids, sep='\n')
+#print(*tab, sep='\n')   # Affiche le tableau, sous forme de matrice (mais avec des crochets)
+print(*ids, sep='\n')
 #print(voisins(t, 0, 0))  #TEST
 mineDetect(tab)
 print()
 print(*tab, sep='\n')
+print()
+print(*tabl, sep='\n')
+print()
 
 cnv.bind("<Button>", caseClick)
 master.mainloop()
