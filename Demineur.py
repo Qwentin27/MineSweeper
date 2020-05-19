@@ -16,6 +16,7 @@ nbline = 20
 nbcol = 20
 nb = 20 # Nombre de mines
 
+
 shuffle(L)
 
 def createTab():        # Création du tableau de jeu (sous forme de matrice)
@@ -44,16 +45,16 @@ def createTabBool():        # Création du tableau de booléens (sous forme de m
         tabl.append(ligne)
     return tabl
 
-def fillTabBool(tabl):
+def fillTabBool(t):
     
     for i in range(nbline):
         for j in range(nbcol):
-            tabl[i][j] = False
+            t[i][j] = False
            
     
 def createTab2D():        # Création du tableau des ids des cases (sous forme de matrice)
     
-    ids = []
+    t = []
     cpt = 0
 
     for i in range(nbline):                 
@@ -61,14 +62,14 @@ def createTab2D():        # Création du tableau des ids des cases (sous forme d
         for j in range(nbcol):
             ligne.append(L[cpt])
             cpt += 1
-        ids.append(ligne)
-    return ids
+        t.append(ligne)
+    return t
     
-def fillField(tab):        # Remplissage du tableau (de façon aléatoire avec des mines ou non)
+def fillField(t):        # Remplissage du tableau (de façon aléatoire avec des mines ou non)
     
     indx1 = []
     indx2 = []
-    n, p = len(tab), len(tab[0])
+    n, p = len(t), len(t[0])
     
     for i in range(n):           # Création d'une liste contenant tous les indices des lignes du tableau
         indx1.append(i)
@@ -81,101 +82,108 @@ def fillField(tab):        # Remplissage du tableau (de façon aléatoire avec d
         ind2 = indx2[randint(0, len(indx2)-1)]
         indx1.remove(ind1)
         indx2.remove(ind2)
-        tab[ind1][ind2] = -1
-        
-    """for k in range(len(tab)):
-        for l in range(len(tab[0])):
-            mineDetect(tab, k, l)"""
+        t[ind1][ind2] = -1
+
         
     
 # REPRIS D'UN TP ATTENTION !
             
-def voisins(tab, i, j):   # Renvoie les indices / valeurs des voisins autour de la case concernée
+def voisins(t, i, j):   # Renvoie les indices / valeurs des voisins autour de la case concernée
     
                             #       De N à N sens horaire
-    Lx = [(a,b) for (a, b) in [(i-1, j), (i-1, j+1), (i, j+1), (i+1, j+1), (i+1,j), (i+1, j-1), (i, j-1), (i-1, j-1)] if a in range(len(tab)) and b in range(len(tab))]
+    Lx = [(a,b) for (a, b) in [(i-1, j), (i-1, j+1), (i, j+1), (i+1, j+1), (i+1,j), (i+1, j-1), (i, j-1), (i-1, j-1)] if a in range(len(t)) and b in range(len(t))]
 
     Lv = []
     
     for k in range(len(Lx)):
-        Lv.append(tab[Lx[k][0]][Lx[k][1]])
+        Lv.append(t[Lx[k][0]][Lx[k][1]])
     
     return Lx, Lv     # Eventuellement renvoyer aussi les coordonnées des voisins pour discovery  
     
 
-t = [[-1, -1, -1],
-     [-1, 0, -1],
-     [-1, -1, -1]]
 
 
-
-
-def createGrid(tabl):         # Création de l'espace de jeu (graphiquement)
+def createGrid(t):         # Création de l'espace de jeu (graphiquement)
     x = 0
     y = 0
-    for i in range(len(tabl)):
+    for i in range(len(t)):
         y = i*c
-        for j in range(len(tabl[i])):
+        for j in range(len(t[i])):
             x = j*c
-            tabl[10][10] = True
-            if tabl[i][j] == False:
-                case = cnv.create_rectangle((x, y), (x+c, y+c), fill="grey")
-                ids[i][j] = case                                      
-                cnv.pack()
+            case = cnv.create_rectangle((x, y), (x+c, y+c), fill="grey")
+            ids[i][j] = case
+            cnv.pack()
             
             
-def discovery(i, j):            # Découverte des cases lors du "1er clic" (aspect graphique à prendre en compte) 
+def discovery(t, i, j):            # Découverte des cases lors du "1er clic" (aspect graphique à prendre en compte) 
     
-
+    
+    L = []
+    L2 = [(i, j)]
+    
+    while len(L2) != 0:
+        
+        n, p = L2.pop(0)   
+        v = voisins(t, n, p)
+            
+        for k in range(len(v[0])):
+            
+            
+            if not(v[0][k] in L):
+                
+                L.append(v[0][k])
+                
+                if v[1][k] == 0 :
+                
+                    L2.append(v[0][k])
+                
+    return L
                 
                 
         
-def mineDetect(tab):           # Algorithme de détection des mines pour une case (et numéro affiché en conséquence)
+def mineDetect(t):           # Algorithme de détection des mines pour une case (et numéro affiché en conséquence)
     
-    for i in range(len(tab)):
-        for j in range (len(tab[0])):
-            if tab[i][j] != -1:  
+    for i in range(len(t)):
+        for j in range (len(t[0])):
+            if t[i][j] != -1:  
                 nb = 0
-                n = len(voisins(tab, i, j)[1])
+                n = len(voisins(t, i, j)[1])
                 for k in range(n):
-                    if voisins(tab, i, j)[1][k] == -1:
+                    if voisins(t, i, j)[1][k] == -1:
                         nb = 1
-                        tab[i][j] += nb
+                        t[i][j] += nb
 
-
-
-    
-"""def mineDetect():
-    #number = 0
-    #posx = 0
-    #posy = 0
-    Lp = [-1, 0, 1]
-    Lx = []
-    Ly = []
-    Lv = []
-    for i in range(n):               # Indication nb mines aux alentours 
-        for j in range(p):
-            if tab[i][j] != -1:		         # Test borderline
-                for k in range(len(Lp)):
-                    if tab[n+k][p+k] == -1:
-                        True"""
 
 def caseNumber(i, j):       # Affichage des numéros (graphiquement)
-    for k in range(1, 9):
+    
+    for k in range(1, 8):
+        
         if tab[i][j] == k:
-            print(k)
-            logo = PhotoImage(file=str(k) + ".png")
-        else:
-            logo = PhotoImage(file="mine18x18.png")
             
-    cnv.create_image(j*20+10, i*20+10, image = logo)
+            #print(tab[i][j])
+            cnv.create_image(j*20+10, i*20+10, image = LImg[k])
+            
+            
+        elif tab[i][j] == -1:
+            
+            cnv.create_image(j*20+10, i*20+10, image = LImg[0])
+            
     
-    
+  
+           
 #def gameState():        # WIN or GAME OVER
 
 # + gérer l'incrémentation du compteur, gérer les composants visuels 
 
-#def tabState():
+def tabState(t):
+    
+    for i in range(len(t)):
+        for j in range(len(t[0])):
+            if t[i][j] == True:
+                cnv.delete(ids[i][j])
+                caseNumber(i, j)
+                
+                
 
 
 
@@ -183,30 +191,54 @@ def caseClick(event):
     x,y = event.x, event.y   # Récupère les coordonnées lors d'un clic 
     line = y//c
     col = x//c
-    tabl[line][col] = True
-    print(*tabl, sep='\n')
-    createGrid(tabl)
-
-
+    tabl[line][col] = True   # Effectuer un test si la case a déjà été cliquée
     
+    if tab[line][col] == 0:
+        L = discovery(tab, line, col)
+        for k in range(len(L)):
+            tabl[L[k][0]][L[k][1]] = True
+    tabState(tabl)
+    #gameState()
+
+#   Images à mettre sur le plateau 
+
+mine = PhotoImage(file="moins1.png")
+un = PhotoImage(file="1.png")
+deux = PhotoImage(file="2.png")
+trois = PhotoImage(file="3.png")
+quatre = PhotoImage(file="4.png")
+cinq = PhotoImage(file="5.png")
+six = PhotoImage(file="6.png")
+sept = PhotoImage(file="7.png")
+huit = PhotoImage(file="8.png")
+
+#   Liste contenant les images
+
+LImg = [mine, un, deux, trois, quatre, cinq, six, sept, huit]
+
+
+
         						
 tab = createTab()              
 ids = createTab2D()
 tabl = createTabBool()
 fillTabBool(tabl)
-createGrid(tabl)
+createGrid(ids)
 fillField(tab)
+mineDetect(tab)
+
 
     
 #print(*tab, sep='\n')   # Affiche le tableau, sous forme de matrice (mais avec des crochets)
 print(*ids, sep='\n')
 #print(voisins(t, 0, 0))  #TEST
-mineDetect(tab)
 print()
 print(*tab, sep='\n')
 print()
 print(*tabl, sep='\n')
 print()
+#+print(discovery(tab, 4, 3))
+
 
 cnv.bind("<Button>", caseClick)
 master.mainloop()

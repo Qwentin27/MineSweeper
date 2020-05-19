@@ -1,3 +1,14 @@
+from tkinter import * 
+master = Tk()
+HEIGHT = 500    # Dimensions du Canvas
+WIDTH = 500
+
+cnv = Canvas(master, height=HEIGHT, width=WIDTH, bg='ivory')
+
+c = 20
+N = c * c  # Aire du carré
+L = [0] * N # Création d'une liste remplie de 0
+
 tab = [[0, 0, 0, 0, 0, 0, 0, 1,-1, 1],
        [1, 1, 2, 3, 2, 1, 0, 1, 1, 1],
        [1,-1,-1,-1, 1, 0, 0, 0, 0, 0],
@@ -9,8 +20,8 @@ tab = [[0, 0, 0, 0, 0, 0, 0, 1,-1, 1],
        [1, 1, 0, 0, 1,-1, 1, 0, 0, 0],
        [0, 0, 0, 0, 1, 1, 1, 0, 0, 0]]
 
-nb = 5 + 6 + 1 + 3 + 4 + 18
-print(nb)
+#nb = 5 + 6 + 1 + 3 + 4 + 18
+#print(nb)
 """ 
 nb = 5 + 6 + 1 + 3 + 4 + 18
 
@@ -77,8 +88,47 @@ def discovery(tab, i, j):
                 
     return L
             
+def createTab2D():        # Création du tableau des ids des cases (sous forme de matrice)
+    
+    t = []
+    cpt = 0
+
+    for i in range(10):                 
+        ligne = []
+        for j in range(10):
+            ligne.append(L[cpt])
+            cpt += 1
+        t.append(ligne)
+    return t
         
-print(len(discovery(tab, 4, 3)))
+def createGrid(t):         # Création de l'espace de jeu (graphiquement)
+    x = 0
+    y = 0
+    for i in range(len(t)):
+        y = i*c
+        for j in range(len(t[i])):
+            x = j*c
+            case = cnv.create_rectangle((x, y), (x+c, y+c), fill="grey")
+            ids[i][j] = case
+            cnv.pack()
+
+def img():
+   logo = PhotoImage(file="1.png")
+   cnv.create_image(10, 10, image = logo)
+
     
+def caseClick(event):         
+    x,y = event.x, event.y   # Récupère les coordonnées lors d'un clic 
+    line = y//c
+    col = x//c
+    cnv.delete(ids[line][col])
+
     
-    
+ids = createTab2D()
+createGrid(tab)
+img()
+
+del(ids[5][5])
+
+cnv.bind("<Button>", caseClick)
+master.mainloop()
