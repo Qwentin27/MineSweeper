@@ -142,30 +142,39 @@ def caseNumber(i, j):       # Affichage des numéros (graphiquement)
 def gameState(i, j):        # Test WIN or GAME OVER
     
     if tab[i][j] == -1:
+        gameMessage(False)
         for n in range(len(tab)):
             for p in range(len(tab[0])):
                 if tab[n][p] == -1:
                     tabl[n][p] = True
-    tabState(tabl)
-    
-    win = True
+    game()
+
+def game():
+
+    game = True
     
     for n in range(len(tab)):
         for p in range(len(tab[0])):
             if tab[n][p] != -1 and tabl[n][p] != True:
-                win = False
-
-
-
-
-
-
-"""def game(win):   # affichage d'un message de game over ou win 
+                game = False
+    if game:
+        gameMessage(True)
+        
+                
+def gameMessage(win):
     
-    if win == False:
-        print("Vous avez perdu")
+    #del(tab)
+    #del(tabl)
+    #del(ids)
+    
+    if win:
+        print("Vous avez gagné")   # affichage d'un message de win 
+        
     else:
-        True"""
+        print("Vous avez perdu")   # affichage d'un message de lose
+        
+
+
         
 # + gérer l'incrémentation du compteur, gérer les composants visuels 
 
@@ -179,23 +188,27 @@ def tabState(t):    # Rafraîchissement du tableau
         for j in range(len(t[0])):
             if t[i][j] == True:
                 cnv.delete(ids[i][j])
-                caseNumber(i, j)
                 cnv.pack()
-           
+                caseNumber(i, j)
+                
+          
 
 def caseClick(event):    # Gestion lors d'un clic
      
     x,y = event.x, event.y   # Récupère les coordonnées lors d'un clic 
     line = y//c
     col = x//c
-    tabl[line][col] = True   # Effectuer un test si la case a déjà été cliquée
-    gameState(line, col)
     
-    if tab[line][col] == 0:
-        L = discovery(tab, line, col)
-        for k in range(len(L)):
-            tabl[L[k][0]][L[k][1]] = True
-    tabState(tabl)
+    if tabl[line][col] != True:
+        
+        tabl[line][col] = True   # Effectuer un test si la case a déjà été cliquée
+        gameState(line, col)
+    
+        if tab[line][col] == 0:
+            L = discovery(tab, line, col)
+            for k in range(len(L)):
+                tabl[L[k][0]][L[k][1]] = True
+        tabState(tabl)
     
 
 #   Images à mettre sur le plateau 
