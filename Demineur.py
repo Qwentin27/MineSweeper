@@ -3,10 +3,10 @@ from random import shuffle, randint
                     
 master = Tk()   # Fenêtre principale
 
-HEIGHT = 500    # Dimensions du Canvas
+HEIGHT = 400    # Dimensions du Canvas
 WIDTH = 500
 
-cnv = Canvas(master, height=HEIGHT, width=WIDTH, bg='ivory')    # Création du Canvas
+cnv = Canvas(master, height=HEIGHT, width=WIDTH, bg='lightblue')    # Création du Canvas
 
 c = 20  # Côté carré
 N = c * c  # Aire du carré
@@ -30,7 +30,6 @@ def createTab():        # Création des tableaux de jeux (sous forme de matrice)
             cpt += 1
         tab.append(ligne)
     return tab
-
 
 def fillTabBool(t):     # Remplissage du tableau de Booléens
     
@@ -83,8 +82,8 @@ def createGrid(t):         # Création de l'espace de jeu (graphiquement)
         for j in range(len(t[i])):
             x = j*c
             case = cnv.create_rectangle((x, y), (x+c, y+c), fill="grey")
-            ids[i][j] = case
-            cnv.pack()
+            t[i][j] = case
+            cnv.pack(side=BOTTOM)
             
             
 def discovery(t, i, j):   # Découverte des cases lors du "1er clic" (aspect graphique à prendre en compte) 
@@ -111,7 +110,9 @@ def discovery(t, i, j):   # Découverte des cases lors du "1er clic" (aspect gra
                 
     return L
                 
-                
+
+
+""" MINEDETECT A REVOIR """                
         
 def mineDetect(t):   # Algorithme de détection des mines pour une case (et numéro affiché en conséquence)
     
@@ -124,7 +125,7 @@ def mineDetect(t):   # Algorithme de détection des mines pour une case (et num�
                         t[i][j] += 1 # 
 
 
-def caseNumber(i, j):       # Affichage des numéros (graphiquement)
+def caseNumber(i, j, first):       # Affichage des numéros (graphiquement)
     
     for k in range(1, 8):
         
@@ -134,14 +135,22 @@ def caseNumber(i, j):       # Affichage des numéros (graphiquement)
             
         elif tab[i][j] == -1:
             
-            cnv.create_image(j*20+10, i*20+10, image = LImg[0])
-            
+            if first:
+                
+                cnv.create_image(j*20+10, i*20+10, image = LImg[9])
+                first = False
+                
+            else:
+                
+                cnv.create_image(j*20+10, i*20+10, image = LImg[0])
+                first = False
     
   
            
 def gameState(i, j):        # Test WIN or GAME OVER
     
     if tab[i][j] == -1:
+        #cnv.create_image(j*20+10, i*20+10, image = LImg[len(LImg)-1])
         gameMessage(False)
         for n in range(len(tab)):
             for p in range(len(tab[0])):
@@ -189,7 +198,7 @@ def tabState(t):    # Rafraîchissement du tableau
             if t[i][j] == True:
                 cnv.delete(ids[i][j])
                 cnv.pack()
-                caseNumber(i, j)
+                caseNumber(i, j, True)
                 
           
 
@@ -211,7 +220,7 @@ def caseClick(event):    # Gestion lors d'un clic
         tabState(tabl)
     
 
-#   Images à mettre sur le plateau 
+#   Images / Images à mettre sur le plateau 
 
 mine = PhotoImage(file="moins1.png")
 un = PhotoImage(file="1.png")
@@ -222,15 +231,17 @@ cinq = PhotoImage(file="5.png")
 six = PhotoImage(file="6.png")
 sept = PhotoImage(file="7.png")
 huit = PhotoImage(file="8.png")
+mineR = PhotoImage(file="mineR.png")
+emot = PhotoImage(file="emot.png")
 
 #   Liste contenant les images
 
-LImg = [mine, un, deux, trois, quatre, cinq, six, sept, huit]
-
-
+LImg = [mine, un, deux, trois, quatre, cinq, six, sept, huit, mineR]
 
 # Création et remplissage des différents tableaux  
-     						
+ 
+
+    						
 tab = createTab()              
 ids = createTab()
 tabl = createTab()
@@ -240,7 +251,37 @@ mineDetect(tab)
 createGrid(ids)
 
 
+
+def replay():       # Réinitialisation du plateau pour rejouer une partie
+    
+    cnv.delete(ALL)
+    global tab, ids, tabl      
+    tab = createTab()              
+    ids = createTab()
+    tabl = createTab()
+    fillTabBool(tabl)
+    fillField(tab)
+    mineDetect(tab)
+    createGrid(ids)
+
+    
+
+# Bouton replay (faire fonction après)
+
+btn = Button(image=emot, width= 24, height= 24, bg= "white", command=replay)
+btn.pack(side=TOP)
+  
+
+"""L = [tab, tabl, ids]
+
+for k in range(len(L)):
+    for i in range(len(L[k])):
+        for j in range(len(L[k][0])):
+            L[k][i][k] = 0"""
+
+
 """    TESTS
+
 print(*tab, sep='\n')   # Affiche le tableau, sous forme de matrice (mais avec des crochets)
 print()
 print()
@@ -252,6 +293,7 @@ print()
 print(*tabl, sep='\n')
 print()
 print(discovery(tab, 4, 3))
+
 """
 
 cnv.bind("<Button>", caseClick)
