@@ -285,7 +285,7 @@ def flag(event):    #display flag at x,y and block it
         
         if flags[line][col] == True : #flag on hidden square
             
-            if (int(strFlag.get()) < 50):
+            if (int(strFlag.get()) < nbMine):
                 
                 strFlag.set(int(strFlag.get()) + 1)
                 cnv.create_image(col*20+10, line*20+10, image = gris)
